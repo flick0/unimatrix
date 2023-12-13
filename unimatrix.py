@@ -197,9 +197,17 @@ parser.add_argument('-s', '--speed',
                     help='speed, integer up to 100. Default=85',
                     default=85,
                     type=float)
+parser.add_argument('-e', '--accel',
+                    help='acceleration. Default=10',
+                    default=10,
+                    type=int)
+parser.add_argument('-m', '--max-speed',
+                    help='max speed obtained after accelerating. Default=100',
+                    default=100,
+                    type=float)
 parser.add_argument('-t', '--time',
                     help='time. See details below',
-                    type=int)
+                    type=float)
 parser.add_argument('-u', '--custom-characters',
                     help='your own string of characters to display',
                     default='',
@@ -252,7 +260,10 @@ start_color = colors_str[args.color]
 start_bg = colors_str[args.bg_color]
 
 speed = args.speed
+accel = args.accel
+maxspeed = args.max_speed
 start_delay = int((100 - speed) * 10)
+max_delay = int((100 - maxspeed) * 10)
 
 runtime = None
 
@@ -746,6 +757,9 @@ def _main(screen):
 
             # Add delay before next loop
             curses.napms(key.delay)
+
+            # Update delay based on accel
+            key.delay = max(max_delay ,max(0, key.delay - accel))
 
             # update async clock
             if async_clock:
